@@ -30,7 +30,7 @@ export default component$(() => {
         <RouterHead />
         <title>JTray</title>
       </head>
-      <body lang="en">
+      <body lang="en" class="bg-slate-50 dark:bg-dimmed-background-1 min-h-screen overflow-hidden">
         <RouterOutlet />
         {!isDev && <ServiceWorkerRegister />}
       </body>
