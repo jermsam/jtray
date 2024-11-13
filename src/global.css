@@ -87,7 +87,7 @@
     @apply base-tray border-dashed border-gray-200 bg-gray-300 dark:bg-gray-400;
   }
   .menu-item {
-    @apply block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-[#181818] hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer
+    @apply block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-[#181818] hover:bg-gray-100 dark:hover:bg-[#212121] cursor-pointer
   }
 }
 
