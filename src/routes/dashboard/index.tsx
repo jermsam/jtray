@@ -100,7 +100,7 @@ export default component$(() => {
           <div class={"flex gap-10"}>
             <div class={"flex gap-2"} style={{ marginRight: 6 }}>
               <Switch
-                color={"rgb(21 128 61 )"}
+                color={"#215155"}
                 on={connected.value}
                 onChange$={onSwitchChange}
               >

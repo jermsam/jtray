@@ -9,7 +9,7 @@ export interface SwitchProps {
 export default component$<SwitchProps>((props) => {
   // Signal to track theme state (light or dark)
   const on = useSignal(props.on);
-  const color = useSignal<string>(props.color || '#667744');
+  const color = useSignal<string>(props.color || '#215155');
   
   // Runs when component becomes visible
   useTask$(async ({track}) => {
