@@ -45,7 +45,7 @@ export default component$(() => {
   );
 
   const saveTray = $((tray: TrayProps) => {
-    if (trayToEdit.value) {
+    if (trayToEdit.value?.label) {
       const index = traysStore.trays.findIndex(
         (item) => item.label === trayToEdit.value?.label,
       );
