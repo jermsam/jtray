@@ -92,6 +92,11 @@ export default component$(() => {
   const onSwitchChange = $((v: boolean) => {
     connected.value = v
   })
+  
+  const openAddTray = $(()=>{
+    trayToEdit.value = { label: "", description: "" };
+    openAddTrayForm.value = true
+  })
 
   return (
     <div class={"mx-auto w-[560px] md:w-5/6 max-w-screen"}>
@@ -124,7 +129,7 @@ export default component$(() => {
             </a>
           </div>
           <div class={"flex items-center gap-10"}>
-            <div onclick$={() => (openAddTrayForm.value = true)}>
+            <div onclick$={openAddTray}>
               <Button look={'ghost'}>
                 + TRAY
               </Button>
@@ -158,7 +163,7 @@ export default component$(() => {
             </div>
           </div>
           <TrayDialog
-            title={"New Tray"}
+            title={`${trayToEdit.value ?'Edit': 'New'} Tray`}
             description={
               "Temporary hold for items awaiting further processing, review or action"
             }
