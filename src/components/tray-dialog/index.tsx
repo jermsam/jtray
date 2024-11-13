@@ -31,7 +31,7 @@ export default component$<TrayDialogProps>((props) => {
           </Modal.Trigger>
         </slot>
       )}
-      <Modal.Panel>
+      <Modal.Panel class={'dark:bg-[#212121] dark:text-gray-300 border'}>
         <Modal.Close
           class={cn(
             buttonVariants({ size: "icon", look: "link" }),

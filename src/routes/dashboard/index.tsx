@@ -144,7 +144,7 @@ export default component$(() => {
             <div
               ref={sortableGrid}
               class={
-                "max-h-[800px] h-full flex-wrap gap-10 overflow-y-auto border-dashed no-scrollbar grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 no-scrollbar"
+                "max-h-[800px] py-2 h-full flex-wrap gap-10 overflow-y-auto border-dashed no-scrollbar grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 no-scrollbar"
               }
             >
               {traysStore.trays.map((tray, index) => (

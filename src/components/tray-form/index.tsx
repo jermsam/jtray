@@ -41,7 +41,7 @@ export default component$<TrayFormProps>((props) => {
   return (
     <div class={"flex flex-col gap-10"}>
       <div class="grid gap-4 py-4">
-        <div class="grid grid-cols-4 items-center gap-4">
+        <div class="grid grid-cols-4 items-center gap-4 ">
           <Label for="label" class="text-left">
             Label
           </Label>
@@ -49,7 +49,7 @@ export default component$<TrayFormProps>((props) => {
             name="label"
             id="label"
             placeholder="Pedro Duarte"
-            class="col-span-3"
+            class="col-span-3 dark:bg-[#212121] dark:text-gray-300"
             bind:value={label}
           />
         </div>
@@ -68,7 +68,7 @@ export default component$<TrayFormProps>((props) => {
       </div>
       <footer class={'flex justify-between'}>
         <Slot name={'cancel'}/>
-        <Button look="primary" onClick$={saveTray}>
+        <Button look="primary" onClick$={saveTray} class={'bg-[#75617C] text-gray-200'}>
           Save
         </Button>
       </footer>
