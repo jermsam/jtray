@@ -30,8 +30,8 @@ export default component$(() => {
         <RouterHead />
         <title>JTray</title>
       </head>
-      <body lang="en" class="bg-slate-50 dark:bg-dimmed-background-1 min-h-screen overflow-hidden">
-        <RouterOutlet />
+      <body lang="en" class="overflow-hidden flex items-center bg-gray-50 dark:bg-[#212121] min-h-screen min-w-screen md:w-full dark:text-teal-50">
+        <RouterOutlet/>
         {!isDev && <ServiceWorkerRegister />}
       </body>
     </QwikCityProvider>

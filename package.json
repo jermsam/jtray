@@ -64,6 +64,7 @@
     "json-rules-engine": "^7.0.0",
     "loro-crdt": "^1.1.0",
     "peerbit": "^4.0.27",
+    "rect-scaler": "^1.1.0",
     "sortablejs": "^1.15.3"
   },
   "nx": {}
