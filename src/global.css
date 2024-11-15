@@ -320,3 +320,10 @@
     scrollbar-width: none; /* Firefox */
   }
 }
+
+
+  html .dark {
+    background: #212121;
+  }
+
+
