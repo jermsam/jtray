@@ -1,26 +1,32 @@
 import {
   $,
+  NoSerialize,
   component$,
+  noSerialize,
+  useComputed$,
   useContext,
   useOnDocument,
   useSignal,
+  useTask$
 } from "@builder.io/qwik";
-import type { DocumentHead } from "@builder.io/qwik-city";
+import { type DocumentHead, Link } from "@builder.io/qwik-city";
 
 import Sortable from "sortablejs";
 import TrayCard from "../../components/tray-card";
 import TrayDialog from "~/components/tray-dialog";
 import TrayForm from "~/components/tray-form";
-import { DarkModeContext, TraysContext } from "~/routes/layout";
+import { DarkModeContext, useUser } from "~/routes/layout";
 import type { TrayProps } from "~/data_source";
 import { Button } from "~/components/ui/button/button";
 import Switch from "~/components/switch";
 import {
-  AkarIconsGithubOutlineFill,
   HugeiconsWifiConnected02,
-  HugeiconsWifiDisconnected02,
+  HugeiconsWifiDisconnected02, LucideHouse
 } from "~/components/icons";
 import { LightDarkMode } from "~/components/light-dark-mode";
+import ProfileAvatar from "~/components/profile-avatar";
+import { TraysContext } from "./layout";
+import { isServer } from "@builder.io/qwik/build";
 
 
 export default component$(() => {
@@ -30,26 +36,42 @@ export default component$(() => {
   const traysStore = useContext(TraysContext);
   const trayToEdit = useSignal<TrayProps>();
   const trayToDelete = useSignal<TrayProps>();
-  const darkMode = useContext(DarkModeContext);
-  const connected = useSignal<boolean>(true);
-  
-  useOnDocument(
-    "DOMContentLoaded",
-    $(() => {
-      if (!sortableGrid.value) return;
-      new Sortable(sortableGrid.value, {
-        animation: 150,
-        ghostClass: "ghost-tray",
-      });
-    }),
-  );
 
+  
+  const sortable = useSignal<NoSerialize<Sortable>>();
+  
+  
+  const initSortable = $(async () => {
+    if (!sortableGrid.value) return;
+    const sort = new Sortable(sortableGrid.value, {
+      animation: 150,
+      ghostClass: "ghost-tray",
+      onEnd: (e) => {
+        if (e.oldIndex === undefined || e.newIndex === undefined) return;
+        const getItemsFromNode = (i: Element) => {
+          const ijson = i.getAttribute("data-tray") as string;
+          return JSON.parse(ijson);
+        };
+        const newItems = Array.from(e.target.children).map(getItemsFromNode);
+        traysStore.trays = newItems;
+      }
+    });
+    sortable.value = noSerialize(sort);
+  });
+  
+  useTask$(({ track }) => {
+    track(() => sortableGrid.value);
+    if (isServer) return;
+    initSortable();
+  });
+  
+  useOnDocument("DOMContentLoaded", initSortable);
+  
   const saveTray = $((tray: TrayProps) => {
-    if (trayToEdit.value?.label) {
+    if (trayToEdit.value?.id) {
       const index = traysStore.trays.findIndex(
-        (item) => item.label === trayToEdit.value?.label,
+        (item) => item.id === trayToEdit.value?.id
       );
-      console.log({ index });
       if (index !== -1) {
         traysStore.trays[index] = tray;
       }
@@ -59,14 +81,14 @@ export default component$(() => {
     openAddTrayForm.value = false;
     trayToEdit.value = undefined;
   });
-
+  
   const editTray = $((tray: TrayProps) => {
     trayToEdit.value = tray;
     openAddTrayForm.value = true;
   });
-
+  
   const cancelEditAction = $(() => {
-    trayToEdit.value = { label: "", description: "" };
+    trayToEdit.value = { id: "", label: "", description: "" };
     openAddTrayForm.value = false;
   });
   const promptDeleteTray = $((tray: TrayProps) => {
@@ -74,13 +96,8 @@ export default component$(() => {
     openDeleteDialog.value = true;
   });
   const confirmDeleteTray = $(() => {
-    const indexToRemove = traysStore.trays.findIndex(
-      (item) => item.label === trayToDelete.value?.label,
-    );
-
-    if (indexToRemove > -1 && indexToRemove < traysStore.trays.length) {
-      traysStore.trays.splice(indexToRemove, 1);
-    }
+    const trays = traysStore.trays.filter(tray => tray.id !== trayToDelete.value?.id);
+    traysStore.trays = trays;
     trayToDelete.value = undefined;
     openDeleteDialog.value = false;
   });
@@ -89,122 +106,85 @@ export default component$(() => {
     openDeleteDialog.value = false;
   });
   
-  const onSwitchChange = $((v: boolean) => {
-    connected.value = v
-  })
+  const openAddTray = $(() => {
+    trayToEdit.value = { id: "", label: "", description: "" };
+    openAddTrayForm.value = true;
+  });
   
-  const openAddTray = $(()=>{
-    trayToEdit.value = { label: "", description: "" };
-    openAddTrayForm.value = true
-  })
-
   return (
     <div class={"mx-auto w-[560px] md:w-5/6 max-w-screen"}>
       <div class={"flex flex-col items-center justify-center p-2"}>
-        <div class={"flex w-full items-center justify-between"}>
-          <div class={"flex gap-10"}>
-            <div class={"flex gap-2"} style={{ marginRight: 6 }}>
-              <Switch
-                color={"#215155"}
-                on={connected.value}
-                onChange$={onSwitchChange}
-              >
-                <span q:slot={"off"} class={"text-2xl"}>
-                  {connected.value ? (
-                    <HugeiconsWifiConnected02
-                      class={"text-green-700 dark:text-green-300"}
-                    />
-                  ) : (
-                    <HugeiconsWifiDisconnected02 />
-                  )}
-                </span>
-              </Switch>
-            </div>
-            
-            <a
-              href="https://github.com/jermsam"
-              target="_blank"
-            >
-              <AkarIconsGithubOutlineFill class={"cursor-pointer text-2xl"} />
-            </a>
+        <div class={"my-2 flex justify-between items-center gap-10 h-10 w-full"}>
+          <div class="flex w-full max-w-sm items-center justify-between bg-red-100 ">
           </div>
-          <div class={"flex items-center gap-10"}>
-            <div onclick$={openAddTray}>
-              <Button look={'ghost'}>
-                + TRAY
-              </Button>
-            </div>
-           
-            <LightDarkMode
-              mode={darkMode.value}
-              onModeChange$={(mode) => (darkMode.value = mode)}
-            />
-          </div>
-          </div>
-          <div class={"my-5 flex justify-center items-center gap-10 h-20 w-full"}>
-            <div class="flex w-full max-w-sm items-center space-x-2">
-            </div>
-          </div>
-          <div class={"flex h-full flex-wrap  gap-5"}>
-            <div
-              ref={sortableGrid}
-              class={
-                "max-h-[800px] py-2 h-full flex-wrap gap-10 overflow-y-auto border-dashed no-scrollbar grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 no-scrollbar"
-              }
-            >
-              {traysStore.trays.map((tray, index) => (
-                <TrayCard
-                  key={index}
-                  {...tray}
-                  onEdit$={() => editTray(tray)}
-                  onDelete$={() => promptDeleteTray(tray)}
-                />
-              ))}
-            </div>
-          </div>
-          <TrayDialog
-            title={`${trayToEdit.value ?'Edit': 'New'} Tray`}
-            description={
-              "Temporary hold for items awaiting further processing, review or action"
-            }
-            open={openAddTrayForm.value}
-            openChange$={(val) => (openAddTrayForm.value = val)}
-          >
-            <TrayForm saveTray$={saveTray} tray={trayToEdit.value}>
-              <Button
-                q:slot={"cancel"}
-                look={"outline"}
-                onClick$={cancelEditAction}
-              >
-                Cancel
-              </Button>
-            </TrayForm>
-          </TrayDialog>
-          <TrayDialog
-            title={"Confirm"}
-            description={`Do you really want to delete tray ${trayToDelete.value?.label}? Deleting it will also delete all its items.`}
-            open={openDeleteDialog.value}
-            openChange$={(val) => (openDeleteDialog.value = val)}
-          >
-            <div class={"h-10"} />
-            <div class={"flex  w-full justify-between"}>
-              <Button look={"outline"} onClick$={cancelDeleteAction}>
-                No
-              </Button>
-              <Button onClick$={confirmDeleteTray}>Yes</Button>
-            </div>
-          </TrayDialog>
+          <Button
+            onClick$={openAddTray}
+            look={'outline'}
+            class={'bg-gray-200 border border-gray-500 hover:bg-gray-100 active:bg-gray-50 text-gray-500 dark:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-700 dark:active:bg-gray-500'}
+           >
+            Add Tray
+          </Button>
         </div>
+        <div class={"flex h-full flex-wrap  gap-5"}>
+          <div
+            ref={sortableGrid}
+            class={
+              "max-h-[800px] py-2 h-full flex-wrap gap-10 overflow-y-auto border-dashed no-scrollbar grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 no-scrollbar"
+            }
+          >
+            {traysStore.trays.map((tray) => (
+              <TrayCard
+                key={tray.id}
+                tray={tray}
+                onEdit$={() => editTray(tray)}
+                onDelete$={() => promptDeleteTray(tray)}
+              />
+            ))}
+          </div>
+        </div>
+        <TrayDialog
+          title={`${trayToEdit.value?.id ? "Edit" : "New"} Tray`}
+          description={
+            "Temporary hold for items awaiting further processing, review or action"
+          }
+          open={openAddTrayForm.value}
+          openChange$={(val) => (openAddTrayForm.value = val)}
+        >
+          <TrayForm saveTray$={saveTray} tray={trayToEdit.value}>
+            <Button
+              q:slot={"cancel"}
+              look={"outline"}
+              onClick$={cancelEditAction}
+            >
+              Cancel
+            </Button>
+          </TrayForm>
+        </TrayDialog>
+        <TrayDialog
+          title={"Confirm"}
+          description={`Do you really want to delete tray ${trayToDelete.value?.label}? Deleting it will also delete all its items.`}
+          open={openDeleteDialog.value}
+          openChange$={(val) => (openDeleteDialog.value = val)}
+        >
+          <div class={"h-10"} />
+          <div class={"flex  w-full justify-between"}>
+            <Button look={"outline"} onClick$={cancelDeleteAction}>
+              No
+            </Button>
+            <Button class={"bg-[#75617C] text-gray-200"} onClick$={confirmDeleteTray}>Yes</Button>
+          </div>
+        </TrayDialog>
       </div>
-      );
-      });
-      
-      export const head: DocumentHead = {
-  title: "Welcome to Qwik",
+    </div>
+  );
+});
+
+export const head: DocumentHead = {
+  title: "Trays | Dashboard",
   meta: [
     {
       name: "description",
-      content: "Qwik site description",
-    },
-  ],
+      content: "Qwik site description"
+    }
+  ]
 };

@@ -63,3 +63,34 @@ export const resize = (container: HTMLElement, margin: number, aspectRatio: Aspe
     margin,
   });
 };
+
+
+export function generateRandomColor() {
+  // Generate random values for red, green, and blue components
+  const red = Math.floor(Math.random() * 256);
+  const green = Math.floor(Math.random() * 256);
+  const blue = Math.floor(Math.random() * 256);
+  
+  // Convert values to hexadecimal and format the color string
+  
+  
+  return '#' + red.toString(16).padStart(2, '0') +
+    green.toString(16).padStart(2, '0') +
+    blue.toString(16).padStart(2, '0');
+}
+
+export function isDarkColor(color: string) {
+  // Extract the red, green, and blue components from the color string
+  const red = parseInt(color.substring(1, 3), 16);
+  const green = parseInt(color.substring(3, 5), 16);
+  const blue = parseInt(color.substring(5, 7), 16);
+  
+  // Calculate the luminance of the color
+  // The formula to calculate luminance is L = 0.2126 * R + 0.7152 * G + 0.0722 * B
+  const luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+  
+  // Check if the luminance is below a threshold to classify it as dark
+  // You can adjust this threshold based on your preference
+  const threshold = 128;
+  return luminance < threshold;
+}

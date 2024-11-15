@@ -11,6 +11,7 @@ import { Input } from "~/components/ui/input/input";
 import { Textarea } from "~/components/ui/textarea/textarea";
 import { Button } from "~/components/ui/button/button";
 import { type TrayProps } from "~/data_source";
+import { v4 as uuid } from "uuid";
 
 export interface TrayFormProps {
   tray?: TrayProps;
@@ -21,23 +22,24 @@ export default component$<TrayFormProps>((props) => {
   const label = useSignal<string>("");
   const description = useSignal<string>("");
   const tray = useComputed$(() => ({
+    id: props.tray?.id || uuid(),
     label: label.value,
-    description: description.value,
+    description: description.value
   }));
-
+  
   useTask$(({ track }) => {
     track(() => props.tray);
     if (!props.tray) return;
     label.value = props.tray.label;
     description.value = props.tray.description || "";
   });
-
+  
   const saveTray = $(async () => {
     await props.saveTray$(tray.value);
     label.value = "";
     description.value = "";
   });
-
+  
   return (
     <div class={"flex flex-col gap-10"}>
       <div class="grid gap-4 py-4">
@@ -66,9 +68,9 @@ export default component$<TrayFormProps>((props) => {
           />
         </div>
       </div>
-      <footer class={'flex justify-between'}>
-        <Slot name={'cancel'}/>
-        <Button look="primary" onClick$={saveTray} class={'bg-[#75617C] text-gray-200'}>
+      <footer class={"flex justify-between"}>
+        <Slot name={"cancel"} />
+        <Button look="primary" onClick$={saveTray} class={"bg-[#75617C] text-gray-200"}>
           Save
         </Button>
       </footer>

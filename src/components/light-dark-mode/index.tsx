@@ -12,29 +12,29 @@ export const LightDarkMode = component$<LightDarkModeProps>((props) => {
   useTask$(async ({track}) => {
     track(() => darkMode.value);
     if (isServer) return;
-    const bodyClass = document.body.classList;
-    darkMode.value ? bodyClass.add('dark') : bodyClass.remove('dark');
+   
+    darkMode.value ? document.body.classList.add('dark') : document.body.classList.remove('dark');
     const darkString = JSON.stringify(darkMode.value);
     localStorage.setItem('dark-mode', darkString);
     await props.onModeChange$(darkMode.value);
   });
   useOnDocument('DOMContentLoaded', $(() => {
-    const darkString = localStorage.getItem('dark-mode') as string;
-    const dark = JSON.parse(darkString);
+    const darkString = localStorage.getItem('dark-mode') ;
+    const dark = darkString ?  JSON.parse(darkString): false;
     darkMode.value = !!dark;
   }));
   return (
     <>
-      {!darkMode.value ?
-        <a onClick$={() => darkMode.value = !darkMode.value}>
+      {darkMode.value ?
+        <button onClick$={() => darkMode.value = !darkMode.value}>
           <IonMdSunny
             class="text-4xl cursor-pointer  rounded-full p-2 inline-block transition-transform hover:scale-110"/>
-        </a>
+        </button>
         :
-        <a onClick$={() => darkMode.value = !darkMode.value}>
+        <button onClick$={() => darkMode.value = !darkMode.value}>
           <IonMdMoon
             class="text-4xl cursor-pointer  rounded-full p-2 inline-block transition-transform hover:scale-110"/>
-        </a>
+        </button>
       }
     </>
   );

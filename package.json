@@ -53,7 +53,6 @@
     "typescript": "5.4.5",
     "undici": "*",
     "vite": "5.3.5",
-    "vite-plugin-node-polyfills": "^0.22.0",
     "vite-plugin-top-level-await": "^1.4.4",
     "vite-plugin-wasm": "^3.3.0",
     "vite-tsconfig-paths": "^4.2.1"
@@ -62,10 +61,13 @@
     "@peerbit/document": "^7.1.16",
     "clsx": "^2.1.1",
     "json-rules-engine": "^7.0.0",
+    "letter-avatar-generator": "^1.1.1",
     "loro-crdt": "^1.1.0",
     "peerbit": "^4.0.27",
     "rect-scaler": "^1.1.0",
-    "sortablejs": "^1.15.3"
+    "sortablejs": "^1.15.3",
+    "stream-browserify": "^3.0.0",
+    "uuid": "^11.0.3"
   },
   "nx": {}
 }

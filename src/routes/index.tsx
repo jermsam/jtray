@@ -1,16 +1,15 @@
 import {component$} from '@builder.io/qwik';
 import {type DocumentHead, Link} from '@builder.io/qwik-city';
-import SimpleLayout from "~/components/layouts/simple-layout";
 
 
 export default component$(() => {
   
   return (
-    <SimpleLayout>
+    <div class={'w-full h-full flex flex-col items-center justify-center'}>
       <Link href={'/dashboard'}>
         <span>Dashboard</span>
       </Link>
-    </SimpleLayout>
+    </div>
   );
 });
 
