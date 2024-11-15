@@ -1,8 +1,9 @@
 import { $, component$, Slot, useContext, useSignal, useTask$ } from "@builder.io/qwik";
-import { Link, useLocation } from "@builder.io/qwik-city";
+import { useLocation } from "@builder.io/qwik-city";
 import { Separator } from "@qwik-ui/headless";
 import { HugeiconsWifiConnected02, HugeiconsWifiDisconnected02, LucideHouse } from "~/components/icons";
 import { LightDarkMode } from "~/components/light-dark-mode";
+import { NavLink } from "~/components/nav-link";
 import ProfileAvatar from "~/components/profile-avatar";
 import Switch from "~/components/switch";
 import { DarkModeContext, useUser } from "~/routes/layout";
@@ -41,11 +42,10 @@ export default component$<SimpleLayoutProps>((props) => {
         <div class={"flex w-full items-center justify-between py-3"}>
           <div class={"flex gap-10"}>
             <div class={"flex gap-2"} style={{ marginRight: 6 }}>
-              {loc.url.pathname !== "/" && <Link
-                href="/"
-              >
-                <LucideHouse class={"cursor-pointer text-2xl"} />
-              </Link>}
+              {loc.url.pathname !== "/" &&
+                <NavLink href="/" activeClass="text-green-600">
+                  <LucideHouse class={"cursor-pointer text-2xl"} />
+                </NavLink>}
               {user.value && <ProfileAvatar username={username.value} color={"#75617C"} />}
               <Switch
                 color={"#215155"}

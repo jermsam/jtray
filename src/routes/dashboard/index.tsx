@@ -3,28 +3,19 @@ import {
   NoSerialize,
   component$,
   noSerialize,
-  useComputed$,
   useContext,
   useOnDocument,
   useSignal,
   useTask$
 } from "@builder.io/qwik";
-import { type DocumentHead, Link } from "@builder.io/qwik-city";
+import { type DocumentHead} from "@builder.io/qwik-city";
 
 import Sortable from "sortablejs";
 import TrayCard from "../../components/tray-card";
 import TrayDialog from "~/components/tray-dialog";
 import TrayForm from "~/components/tray-form";
-import { DarkModeContext, useUser } from "~/routes/layout";
 import type { TrayProps } from "~/data_source";
 import { Button } from "~/components/ui/button/button";
-import Switch from "~/components/switch";
-import {
-  HugeiconsWifiConnected02,
-  HugeiconsWifiDisconnected02, LucideHouse
-} from "~/components/icons";
-import { LightDarkMode } from "~/components/light-dark-mode";
-import ProfileAvatar from "~/components/profile-avatar";
 import { TraysContext } from "./layout";
 import { isServer } from "@builder.io/qwik/build";
 
