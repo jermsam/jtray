@@ -299,7 +299,7 @@
 
 @layer components {
   .base-tray {
-    @apply grid h-40 w-40 cursor-pointer items-center justify-center rounded-xl border border-amber-950 bg-[#75617C] shadow hover:shadow-sm active:shadow-xl;
+    @apply grid h-32 w-32 md:h-44 md:w-44 cursor-pointer items-center justify-center rounded-xl border border-amber-950 bg-[#75617C] shadow hover:shadow-sm active:shadow-xl;
   }
   .ghost-tray {
     @apply base-tray border-dashed border-gray-200 bg-gray-300 dark:bg-gray-400;

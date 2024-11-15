@@ -30,9 +30,9 @@ export default component$<SimpleLayoutProps>((props) => {
   
   
   return (
-    <div class={"bg-gray-50 dark:bg-[#212121] min-h-screen min-w-screen md:w-full dark:text-teal-50 p-20 sm:py-2 "}>
+    <div class={"bg-gray-50 dark:bg-[#212121] min-h-screen min-w-screen md:w-full dark:text-teal-50 p-2 "}>
       <div class="mx-auto flex  max-w-screen-xl flex-col items-center justify-center p-3">
-        <div class="py-5">
+        <div class="py-3">
           <h1>{props.title}</h1>
         </div>
         <Separator

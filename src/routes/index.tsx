@@ -13,7 +13,7 @@ export default component$(() => {
         <p>Temporary containers for items awaiting</p>
         <p>processing, review or any other action</p>
       </div>
-      <div class={"w-80 h-80"}>
+      <div class={"w-60 h-60"}>
         <TraysImage/>
       </div>
      <div class={"text-h2 text-xl py-10"}>

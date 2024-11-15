@@ -31,7 +31,7 @@ export default  component$<TrayCardProps>((props) => {
         </KebabMenu>
       </div>
       
-      <p class={'text-4xl'}> {props.tray.label} </p>
+      <p class={'text-xl'}> {props.tray.label} </p>
     </div>
   );
 });

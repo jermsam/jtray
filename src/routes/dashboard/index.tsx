@@ -103,15 +103,15 @@ export default component$(() => {
   });
   
   return (
-    <div class={"mx-auto w-[560px] md:w-5/6 max-w-screen"}>
-      <div class={"flex flex-col items-center justify-center p-2"}>
+    <div class={"mx-auto max-w-screen"}>
+      <div class={"flex flex-col items-center justify-center py-20 md:p-2"}>
         <div class={"my-2 flex justify-between items-center gap-10 h-10 w-full"}>
           <div class="flex w-full max-w-sm items-center justify-between bg-red-100 ">
           </div>
           <Button
             onClick$={openAddTray}
             look={'outline'}
-            class={'bg-gray-200 border border-gray-500 hover:bg-gray-100 active:bg-gray-50 text-gray-500 dark:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-700 dark:active:bg-gray-500'}
+            class={' w-48 bg-gray-200 border border-gray-500 hover:bg-gray-100 active:bg-gray-50 text-gray-500 dark:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-700 dark:active:bg-gray-500'}
            >
             Add Tray
           </Button>
@@ -120,7 +120,7 @@ export default component$(() => {
           <div
             ref={sortableGrid}
             class={
-              "max-h-[800px] py-2 h-full flex-wrap gap-10 overflow-y-auto border-dashed no-scrollbar grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 no-scrollbar"
+              "max-h-[800px] py-2 h-full flex-wrap gap-10 overflow-y-auto border-dashed no-scrollbar grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 no-scrollbar"
             }
           >
             {traysStore.trays.map((tray) => (

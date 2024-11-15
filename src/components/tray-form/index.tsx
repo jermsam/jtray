@@ -43,7 +43,7 @@ export default component$<TrayFormProps>((props) => {
   return (
     <div class={"flex flex-col gap-10"}>
       <div class="grid gap-4 py-4">
-        <div class="grid grid-cols-4 items-center gap-4 ">
+        <div class="md:grid md:grid-cols-4 items-center gap-2 ">
           <Label for="label" class="text-left">
             Label
           </Label>
@@ -55,7 +55,7 @@ export default component$<TrayFormProps>((props) => {
             bind:value={label}
           />
         </div>
-        <div class="grid grid-cols-4 items-center gap-4">
+        <div class="md:grid md:grid-cols-4 items-center gap-4">
           <Label for="description" class="text-left">
             Description
           </Label>
