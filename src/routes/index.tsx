@@ -10,15 +10,15 @@ export default component$(() => {
     <div class={'w-full h-full flex flex-col gap-10 flex-col items-center justify-center'}>
       <div class={'text-center'}>
         <p class={"text-4xl"}>JTrays</p>
-        <p>Temporary containers for items awaiting</p>
-        <p>processing, review or any other action</p>
+        <p class={'text-sm'}>Temporary containers for items awaiting</p>
+        <p class={'text-sm'}>processing, review or any other action</p>
       </div>
       <div class={"w-60 h-60"}>
         <TraysImage/>
       </div>
-     <div class={"text-h2 text-xl py-10"}>
-       <NavLink href="/dashboard" activeClass="text-green-600">
-         <Button look={'outline'} class={'bg-[#75617C] text-gray-200'}>
+     <div class={"text-h2 py-10"}>
+       <NavLink href="/trays" activeClass="text-green-600">
+         <Button look={'outline'} class={'bg-[#75617C] text-gray-200 text-sm'}>
            <span>Let's Explore</span>
          </Button>
        </NavLink>

@@ -1,6 +1,6 @@
 import {
   $,
-  NoSerialize,
+  type NoSerialize,
   component$,
   noSerialize,
   useContext,
@@ -13,7 +13,7 @@ import { type DocumentHead} from "@builder.io/qwik-city";
 import Sortable from "sortablejs";
 import TrayCard from "../../components/tray-card";
 import TrayDialog from "~/components/tray-dialog";
-import TrayForm from "~/components/tray-form";
+import TrayForm from "../../components/forms/tray-form";
 import type { TrayProps } from "~/data_source";
 import { Button } from "~/components/ui/button/button";
 import { TraysContext } from "./layout";
@@ -43,17 +43,16 @@ export default component$(() => {
           const ijson = i.getAttribute("data-tray") as string;
           return JSON.parse(ijson);
         };
-        const newItems = Array.from(e.target.children).map(getItemsFromNode);
-        traysStore.trays = newItems;
+        traysStore.trays =  Array.from(e.target.children).map(getItemsFromNode);
       }
     });
     sortable.value = noSerialize(sort);
   });
   
-  useTask$(({ track }) => {
+  useTask$(async ({ track }) => {
     track(() => sortableGrid.value);
     if (isServer) return;
-    initSortable();
+    await initSortable();
   });
   
   useOnDocument("DOMContentLoaded", initSortable);
@@ -87,8 +86,7 @@ export default component$(() => {
     openDeleteDialog.value = true;
   });
   const confirmDeleteTray = $(() => {
-    const trays = traysStore.trays.filter(tray => tray.id !== trayToDelete.value?.id);
-    traysStore.trays = trays;
+    traysStore.trays = traysStore.trays.filter(tray => tray.id !== trayToDelete.value?.id);
     trayToDelete.value = undefined;
     openDeleteDialog.value = false;
   });
@@ -104,14 +102,15 @@ export default component$(() => {
   
   return (
     <div class={"mx-auto max-w-screen"}>
-      <div class={"flex flex-col items-center justify-center py-20 md:p-2"}>
+      <div class={"flex flex-col items-center justify-center py-16 md:p-2"}>
         <div class={"my-2 flex justify-between items-center gap-10 h-10 w-full"}>
-          <div class="flex w-full max-w-sm items-center justify-between bg-red-100 ">
+          <div class="flex w-full max-w-sm text-sm items-center justify-between">
+            Trays are better organized per business operation.
           </div>
           <Button
             onClick$={openAddTray}
             look={'outline'}
-            class={' w-48 bg-gray-200 border border-gray-500 hover:bg-gray-100 active:bg-gray-50 text-gray-500 dark:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-700 dark:active:bg-gray-500'}
+            class={' text-sm w-48 bg-gray-200 border border-gray-500 hover:bg-gray-100 active:bg-gray-50 text-gray-500 dark:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-700 dark:active:bg-gray-500'}
            >
             Add Tray
           </Button>

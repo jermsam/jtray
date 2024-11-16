@@ -7,24 +7,60 @@ export interface TrayProps {
   id: string;
   label: string;
   description?: string;
+  trays?: TrayProps[];
   items?: Item[]
 }
 
 export const trays: TrayProps[] = [
   {
     id: uuid(),
-    label: 'A',
-    description: 'a'
+    label: 'Customer Support',
+    description: 'service ops'
   },
   {
     id: uuid(),
-    label: 'B',
-    description: 'b'
+    label: 'Sales And Marketting',
+    description: ''
   },
   {
     id: uuid(),
-    label: 'C',
-    description: 'c'
+    label: 'Finance And Accounting',
+    description: ''
+  },
+  {
+    id: uuid(),
+    label: 'Human Resource',
+    description: ''
+  },
+  {
+    id: uuid(),
+    label: 'Project management',
+    description: 'Operations'
+  },
+  {
+    id: uuid(),
+    label: 'Procurement',
+    description: 'Supply Chain'
+  },
+  {
+    id: uuid(),
+    label: 'Legal And Compliance',
+    description: ''
+  },
+  {
+    id: uuid(),
+    label: 'IT And Development',
+    description: ''
+  },
+  {
+    id: uuid(),
+    label: 'Product Management',
+    description: ''
+  },
+  {
+    id: uuid(),
+    label: 'Document Management',
+    description: ''
   },
 ];
 
