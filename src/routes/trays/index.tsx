@@ -106,7 +106,7 @@ export default component$(() => {
       <div class={"flex flex-col items-center justify-center py-16 md:p-2"}>
         <div class={"my-2 flex justify-between items-center gap-10 h-10 w-full"}>
           <div class="flex w-full max-w-md text-sm items-center justify-between">
-            For optimal efficiency, Categorize trays by business operations.
+            For optimal efficiency, categorize trays by business operations.
           </div>
           <Button
             onClick$={openAddTray}
