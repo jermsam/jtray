@@ -7,11 +7,11 @@ import TraysImage from '~/media/trays.webp?jsx';
 export default component$(() => {
   
   return (
-    <div class={'w-full h-full flex flex-col gap-10 flex-col items-center justify-center'}>
+    <div class={'w-full h-full flex flex-col gap-10  items-center justify-center'}>
       <div class={'text-center'}>
         <p class={"text-4xl"}>JTrays</p>
-        <p class={'text-sm'}>Temporary containers for items awaiting</p>
-        <p class={'text-sm'}>processing, review or any other action</p>
+        <p class={'text-sm max-w-md'}>Your temporary containers for items awaiting processing, review, or further handling.
+        Ideal for clutter-free business operations and efficient task management.</p>
       </div>
       <div class={"w-60 h-60"}>
         <TraysImage/>
