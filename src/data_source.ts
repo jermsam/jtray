@@ -1,17 +1,35 @@
 import { v4 as uuid } from "uuid";
-export interface Item {
+// Define the Item schema
+import { z } from "zod";
 
+export const TrayItemSchema = z.object({
+  // Define the properties of Item when they are known
+  // For now, an empty object is valid for Item.
+  name: z.string().optional(),
+});
+
+export type TrayItemType = z.infer<typeof TrayItemSchema>;
+
+export const TraySchema: z.ZodType = z.lazy(() =>
+  z.object({
+    id: z.string(),
+    label: z.string(),
+    description: z.string().optional(),
+    trays: z.array(TraySchema).optional(), // Recursive reference
+    items: z.array(TrayItemSchema).optional(),
+  })
+);
+
+export type TrayType = z.infer<typeof TraySchema>;
+
+export const initialTray: TrayType = {
+  label: '',
+  description: '',
 }
 
-export interface TrayProps {
-  id: string;
-  label: string;
-  description?: string;
-  trays?: TrayProps[];
-  items?: Item[]
-}
 
-export const trays: TrayProps[] = [
+
+export const trays: TrayType[] = [
   {
     id: uuid(),
     label: 'Customer Support',

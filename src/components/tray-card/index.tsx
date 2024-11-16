@@ -1,9 +1,10 @@
-import type {TrayProps} from '~/data_source';
+
 import { component$, type QRL} from "@builder.io/qwik";
 import KebabMenu from "~/components/kebab-menu";
+import { type TrayType } from "~/data_source";
 
 export interface TrayCardProps {
-  tray: TrayProps;
+  tray: TrayType;
   onEdit$?: QRL<() => void>;
   onDelete$?: QRL<() => void>;
 }

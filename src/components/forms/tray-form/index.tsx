@@ -10,18 +10,18 @@ import { Label } from "~/components/ui/label/label";
 import { Input } from "~/components/ui/input/input";
 import { Textarea } from "~/components/ui/textarea/textarea";
 import { Button } from "~/components/ui/button/button";
-import { type TrayProps } from "~/data_source";
 import { v4 as uuid } from "uuid";
+import { type TrayType } from "~/data_source";
 
 export interface TrayFormProps {
-  tray?: TrayProps;
-  saveTray$: QRL<(tray: TrayProps) => void>;
+  tray?: TrayType;
+  saveTray$: QRL<(tray: TrayType) => void>;
 }
 
 export default component$<TrayFormProps>((props) => {
   const label = useSignal<string>("");
   const description = useSignal<string>("");
-  const tray = useComputed$(() => ({
+  const tray = useComputed$<TrayType>(() => ({
     id: props.tray?.id || uuid(),
     label: label.value,
     description: description.value
@@ -50,7 +50,7 @@ export default component$<TrayFormProps>((props) => {
           <Input
             name="label"
             id="label"
-            placeholder="Pedro Duarte"
+            placeholder="Required Label"
             class="col-span-3 dark:bg-[#212121] dark:text-gray-300"
             bind:value={label}
           />

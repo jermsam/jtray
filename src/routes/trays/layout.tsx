@@ -5,11 +5,11 @@ import {
   useContextProvider,
   useStore,
 } from "@builder.io/qwik";
-import { type TrayProps, trays } from "~/data_source";
+import { trays, type TrayType } from "~/data_source";
 
 
 interface TrayStore {
-  trays: TrayProps[];
+  trays: TrayType[];
 }
 
 // Create a Context ID (no data is saved here.)

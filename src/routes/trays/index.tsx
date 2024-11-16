@@ -14,10 +14,11 @@ import Sortable from "sortablejs";
 import TrayCard from "../../components/tray-card";
 import TrayDialog from "~/components/tray-dialog";
 import TrayForm from "../../components/forms/tray-form";
-import type { TrayProps } from "~/data_source";
+
 import { Button } from "~/components/ui/button/button";
 import { TraysContext } from "./layout";
 import { isServer } from "@builder.io/qwik/build";
+import { type TrayType } from "~/data_source";
 
 
 export default component$(() => {
@@ -25,8 +26,8 @@ export default component$(() => {
   const openDeleteDialog = useSignal<boolean>(false);
   const openAddTrayForm = useSignal<boolean>(false);
   const traysStore = useContext(TraysContext);
-  const trayToEdit = useSignal<TrayProps>();
-  const trayToDelete = useSignal<TrayProps>();
+  const trayToEdit = useSignal<TrayType>();
+  const trayToDelete = useSignal<TrayType>();
 
   
   const sortable = useSignal<NoSerialize<Sortable>>();
@@ -57,7 +58,7 @@ export default component$(() => {
   
   useOnDocument("DOMContentLoaded", initSortable);
   
-  const saveTray = $((tray: TrayProps) => {
+  const saveTray = $((tray: TrayType) => {
     if (trayToEdit.value?.id) {
       const index = traysStore.trays.findIndex(
         (item) => item.id === trayToEdit.value?.id
@@ -72,7 +73,7 @@ export default component$(() => {
     trayToEdit.value = undefined;
   });
   
-  const editTray = $((tray: TrayProps) => {
+  const editTray = $((tray: TrayType) => {
     trayToEdit.value = tray;
     openAddTrayForm.value = true;
   });
@@ -81,7 +82,7 @@ export default component$(() => {
     trayToEdit.value = { id: "", label: "", description: "" };
     openAddTrayForm.value = false;
   });
-  const promptDeleteTray = $((tray: TrayProps) => {
+  const promptDeleteTray = $((tray: TrayType) => {
     trayToDelete.value = tray;
     openDeleteDialog.value = true;
   });
