@@ -36,9 +36,9 @@ export const onRequest: RequestHandler = async ({
   }
 };
 
-function loadUserFromCookie(cookie: Cookie): User | null {
+function loadUserFromCookie(cookie?: Cookie): User | null {
   // this is where you would check cookie for user.
-  console.log(cookie);
+  if(!cookie) return null;
   // if (cookie) {
   // just return mock user for this demo.
   return {

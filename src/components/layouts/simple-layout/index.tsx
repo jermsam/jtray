@@ -46,7 +46,7 @@ export default component$<SimpleLayoutProps>((props) => {
                 <NavLink href="/" activeClass="text-green-600">
                   <LucideHouse class={"cursor-pointer text-2xl"} />
                 </NavLink>}
-              {user.value && <ProfileAvatar username={username.value} color={"#75617C"} />}
+             <ProfileAvatar username={username.value} color={"#75617C"} />
               <Switch
                 color={"#215155"}
                 on={connected.value}
