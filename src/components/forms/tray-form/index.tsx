@@ -1,79 +1,115 @@
-import {
-  $,
-  component$,
-  type QRL, Slot,
-  useComputed$,
-  useSignal,
-  useTask$
-} from "@builder.io/qwik";
-import { Label } from "~/components/ui/label/label";
+import { component$, type QRL, Slot, useTask$ } from "@builder.io/qwik";
+import { useForm, zodForm$, formAction$, setValue } from "@modular-forms/qwik";
 import { Input } from "~/components/ui/input/input";
-import { Textarea } from "~/components/ui/textarea/textarea";
 import { Button } from "~/components/ui/button/button";
-import { v4 as uuid } from "uuid";
-import { type TrayType } from "~/data_source";
+import { initialTray, type Tray,  traySchema } from "~/lib/data";
+import { Label } from "@qwik-ui/headless";
+import { Textarea } from "~/components/ui/textarea/textarea";
+
+export const useFormAction = formAction$(async (values, ctx) => {
+  // Runs on server
+  const res = await fetch(`${ctx.url.origin}/api/trays/${values.id}`);
+  const tray = await res.json();
+  if (tray.error) {
+    // post
+    await fetch(`${ctx.url.origin}/api/trays`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+    });
+    
+  } else {
+    // put
+    await fetch(`${ctx.url.origin}/api/trays/${values.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(values),
+    });
+  }
+
+  
+  // @ts-ignore
+}, zodForm$(traySchema));
 
 export interface TrayFormProps {
-  tray?: TrayType;
-  saveTray$: QRL<(tray: TrayType) => void>;
+  tray?: Tray;
+  onCancel$?: QRL<() => void>;
 }
 
 export default component$<TrayFormProps>((props) => {
-  const label = useSignal<string>("");
-  const description = useSignal<string>("");
-  const tray = useComputed$<TrayType>(() => ({
-    id: props.tray?.id || uuid(),
-    label: label.value,
-    description: description.value
-  }));
-  
+  const [trayForm, { Form, Field }] = useForm<Tray>({
+    // @ts-ignore
+    loader: { value: initialTray },
+    validate: zodForm$(traySchema),
+    action: useFormAction(),
+  });
+
   useTask$(({ track }) => {
     track(() => props.tray);
     if (!props.tray) return;
-    label.value = props.tray.label;
-    description.value = props.tray.description || "";
+    for (const [key, value] of Object.entries(props.tray)) {
+      setValue(trayForm, key, value as never);
+    }
   });
-  
-  const saveTray = $(async () => {
-    await props.saveTray$(tray.value);
-    label.value = "";
-    description.value = "";
-  });
-  
+
   return (
-    <div class={"flex flex-col gap-10"}>
+    <Form class={"flex flex-col gap-10"} onSubmit$={props.onCancel$}>
+      <Field name={"id"}>
+        {(field, props) => (
+          <input {...props} type={"hidden"} value={field.value} />
+        )}
+      </Field>
       <div class="grid gap-4 py-4">
-        <div class="md:grid md:grid-cols-4 items-center gap-2 ">
-          <Label for="label" class="text-left">
-            Label
-          </Label>
-          <Input
-            name="label"
-            id="label"
-            placeholder="Required Label"
-            class="col-span-3 dark:bg-[#212121] dark:text-gray-300"
-            bind:value={label}
-          />
-        </div>
-        <div class="md:grid md:grid-cols-4 items-center gap-4">
-          <Label for="description" class="text-left">
-            Description
-          </Label>
-          <Textarea
-            name="description"
-            id="description"
-            placeholder="Optional Description"
-            class="col-span-3"
-            bind:value={description}
-          />
-        </div>
+        <Field name={"label"}>
+          {(field, props) => (
+            <div class="items-center gap-2 md:grid md:grid-cols-4 ">
+              <Label for="label" class="text-left">
+                Label
+              </Label>
+              <Input
+                {...props}
+                name="label"
+                id="label"
+                placeholder="Required Label"
+                class="col-span-3 dark:bg-[#212121] dark:text-gray-300"
+                value={field.value}
+                error={field.error}
+              />
+            </div>
+          )}
+        </Field>
+
+        <Field name={"description"}>
+          {(field, props) => (
+            <div class="items-center gap-4 md:grid md:grid-cols-4">
+              <Label for="description" class="text-left">
+                Description
+              </Label>
+              <Textarea
+                {...props}
+                name="description"
+                id="description"
+                placeholder="Optional Description"
+                class="col-span-3"
+                value={field.value}
+                error={field.error}
+              />
+            </div>
+          )}
+        </Field>
       </div>
       <footer class={"flex justify-between"}>
         <Slot name={"cancel"} />
-        <Button look="primary" onClick$={saveTray} class={"bg-[#75617C] text-gray-200"}>
+        <Button
+          look="primary"
+          type={"submit"}
+          class={"bg-[#75617C] text-gray-200"}
+        >
           Save
         </Button>
       </footer>
-    </div>
+    </Form>
   );
 });

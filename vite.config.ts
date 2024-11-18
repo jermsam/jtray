@@ -21,9 +21,15 @@ errorOnDuplicatesPkgDeps(devDependencies, dependencies);
 /**
  * Note that Vite normally starts from `index.html` but the qwikCity plugin makes start at `src/entry.ssr.tsx` instead.
  */
-export default defineConfig(({ command, mode }): UserConfig => {
+export default defineConfig((): UserConfig => {
   return {
-    plugins: [qwikCity(), qwikVite(), tsconfigPaths(),  wasm(), topLevelAwait()],
+    plugins: [
+      qwikCity(),
+      qwikVite(),
+      tsconfigPaths(),
+      wasm(),
+      topLevelAwait()
+    ],
     // This tells Vite which dependencies to pre-build in dev mode.
     optimizeDeps: {
       // Put problematic deps that break bundling here, mostly those with binaries.
@@ -74,7 +80,7 @@ function errorOnDuplicatesPkgDeps(
   devDependencies: PkgDep,
   dependencies: PkgDep,
 ) {
-  let msg = "";
+  let msg: string;
   // Create an array 'duplicateDeps' by filtering devDependencies.
   // If a dependency also exists in dependencies, it is considered a duplicate.
   const duplicateDeps = Object.keys(devDependencies).filter(

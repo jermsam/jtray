@@ -6,33 +6,40 @@ import {
   useContext,
   useOnDocument,
   useSignal,
-  useTask$
+  useTask$,
 } from "@builder.io/qwik";
-import { type DocumentHead} from "@builder.io/qwik-city";
-
+import { type DocumentHead, server$,} from "@builder.io/qwik-city";
 import Sortable from "sortablejs";
 import TrayCard from "../../components/tray-card";
 import TrayDialog from "~/components/tray-dialog";
 import TrayForm from "../../components/forms/tray-form";
-
 import { Button } from "~/components/ui/button/button";
 import { TraysContext } from "./layout";
 import { isServer } from "@builder.io/qwik/build";
-import { type TrayType } from "~/data_source";
+import { initialTray, type Tray } from "~/lib/data";
 
+export const deleteTray = server$(async function (id: string) {
+  const res: Response = await fetch(`${this.url.origin}/api/trays/${id}`, {
+    method: "DELETE",
+  });
+
+  if (res.status === 204) {
+    return { message: `Tray with ID ${id} deleted successfully.` };
+  } else {
+    const error = await res.json();
+    return { error: error.error || "Failed to delete tray" };
+  }
+});
 
 export default component$(() => {
   const sortableGrid = useSignal<HTMLDivElement>();
   const openDeleteDialog = useSignal<boolean>(false);
   const openAddTrayForm = useSignal<boolean>(false);
   const traysStore = useContext(TraysContext);
-  const trayToEdit = useSignal<TrayType>();
-  const trayToDelete = useSignal<TrayType>();
-
-  
+  const trayToEdit = useSignal<Tray>();
+  const trayToDelete = useSignal<Tray>();
   const sortable = useSignal<NoSerialize<Sortable>>();
-  
-  
+
   const initSortable = $(async () => {
     if (!sortableGrid.value) return;
     const sort = new Sortable(sortableGrid.value, {
@@ -40,54 +47,45 @@ export default component$(() => {
       ghostClass: "ghost-tray",
       onEnd: (e) => {
         if (e.oldIndex === undefined || e.newIndex === undefined) return;
-        const getItemsFromNode = (i: Element) => {
-          const ijson = i.getAttribute("data-tray") as string;
-          return JSON.parse(ijson);
-        };
-        traysStore.trays =  Array.from(e.target.children).map(getItemsFromNode);
-      }
+        
+        // Refactor to update only the trays that have changed
+        
+        // const getItemsFromNode = (i: Element) => {
+        //   const iJson = i.getAttribute("data-tray") as string;
+        //   return JSON.parse(iJson);
+        // };
+        // traysStore.trays = Array.from(e.target.children).map(getItemsFromNode);
+      },
     });
     sortable.value = noSerialize(sort);
   });
-  
+
   useTask$(async ({ track }) => {
     track(() => sortableGrid.value);
     if (isServer) return;
     await initSortable();
   });
-  
+
   useOnDocument("DOMContentLoaded", initSortable);
-  
-  const saveTray = $((tray: TrayType) => {
-    if (trayToEdit.value?.id) {
-      const index = traysStore.trays.findIndex(
-        (item) => item.id === trayToEdit.value?.id
-      );
-      if (index !== -1) {
-        traysStore.trays[index] = tray;
-      }
-    } else {
-      traysStore.trays.push(tray);
-    }
-    openAddTrayForm.value = false;
-    trayToEdit.value = undefined;
-  });
-  
-  const editTray = $((tray: TrayType) => {
+
+  const editTray = $((tray: Tray) => {
     trayToEdit.value = tray;
     openAddTrayForm.value = true;
   });
-  
+
   const cancelEditAction = $(() => {
-    trayToEdit.value = { id: "", label: "", description: "" };
+    trayToEdit.value = initialTray;
     openAddTrayForm.value = false;
   });
-  const promptDeleteTray = $((tray: TrayType) => {
+  const promptDeleteTray = $((tray: Tray) => {
     trayToDelete.value = tray;
     openDeleteDialog.value = true;
   });
-  const confirmDeleteTray = $(() => {
-    traysStore.trays = traysStore.trays.filter(tray => tray.id !== trayToDelete.value?.id);
+  const confirmDeleteTray = $(async () => {
+    if (!trayToDelete.value) return;
+    const trayIdToDelete = trayToDelete.value.id;
+    const result = await deleteTray(trayIdToDelete);
+    console.log(result.message || result.error);
     trayToDelete.value = undefined;
     openDeleteDialog.value = false;
   });
@@ -95,24 +93,33 @@ export default component$(() => {
     trayToDelete.value = undefined;
     openDeleteDialog.value = false;
   });
-  
+
   const openAddTray = $(() => {
-    trayToEdit.value = { id: "", label: "", description: "" };
+    trayToEdit.value = initialTray;
     openAddTrayForm.value = true;
   });
-  
+
+  const onCancel = $(async () => {
+    trayToEdit.value = initialTray;
+    openAddTrayForm.value = false;
+  });
+
   return (
-    <div class={"mx-auto max-w-screen"}>
+    <div class={"max-w-screen mx-auto"}>
       <div class={"flex flex-col items-center justify-center py-16 md:p-2"}>
-        <div class={"my-2 flex justify-between items-center gap-10 h-10 w-full"}>
-          <div class="flex w-full max-w-md text-sm items-center justify-between">
+        <div
+          class={"my-2 flex h-10 w-full items-center justify-between gap-10"}
+        >
+          <div class="flex w-full max-w-md items-center justify-between text-sm">
             For optimal efficiency, categorize trays by business operations.
           </div>
           <Button
             onClick$={openAddTray}
-            look={'outline'}
-            class={' text-sm w-48 bg-gray-200 border border-gray-500 hover:bg-gray-100 active:bg-gray-50 text-gray-500 dark:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-700 dark:active:bg-gray-500'}
-           >
+            look={"outline"}
+            class={
+              " w-48 border border-gray-500 bg-gray-200 text-sm text-gray-500 hover:bg-gray-100 active:bg-gray-50 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-700 dark:active:bg-gray-500"
+            }
+          >
             Add Tray
           </Button>
         </div>
@@ -120,7 +127,7 @@ export default component$(() => {
           <div
             ref={sortableGrid}
             class={
-              "max-h-[800px] py-2 h-full flex-wrap gap-10 overflow-y-auto border-dashed no-scrollbar grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 no-scrollbar"
+              "no-scrollbar no-scrollbar grid h-full max-h-[800px] grid-cols-2 flex-wrap gap-10 overflow-y-auto border-dashed py-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
             }
           >
             {traysStore.trays.map((tray) => (
@@ -134,14 +141,14 @@ export default component$(() => {
           </div>
         </div>
         <TrayDialog
-          title={`${trayToEdit.value?.id ? "Edit" : "New"} Tray`}
+          title={`${trayToEdit.value?.label ? "Edit" : "New"} Tray`}
           description={
             "Temporary hold for items awaiting further processing, review or action"
           }
           open={openAddTrayForm.value}
           openChange$={(val) => (openAddTrayForm.value = val)}
         >
-          <TrayForm saveTray$={saveTray} tray={trayToEdit.value}>
+          <TrayForm tray={trayToEdit.value} onCancel$={onCancel}>
             <Button
               q:slot={"cancel"}
               look={"outline"}
@@ -162,7 +169,12 @@ export default component$(() => {
             <Button look={"outline"} onClick$={cancelDeleteAction}>
               No
             </Button>
-            <Button class={"bg-[#75617C] text-gray-200"} onClick$={confirmDeleteTray}>Yes</Button>
+            <Button
+              class={"bg-[#75617C] text-gray-200"}
+              onClick$={confirmDeleteTray}
+            >
+              Yes
+            </Button>
           </div>
         </TrayDialog>
       </div>
@@ -175,7 +187,7 @@ export const head: DocumentHead = {
   meta: [
     {
       name: "description",
-      content: "Qwik site description"
-    }
-  ]
+      content: "Qwik site description",
+    },
+  ],
 };

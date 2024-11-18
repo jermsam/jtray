@@ -1,7 +1,7 @@
 
 import { component$, type QRL} from "@builder.io/qwik";
 import KebabMenu from "~/components/kebab-menu";
-import { type TrayType } from "~/data_source";
+import { type TrayType } from "~/lib/data_source";
 
 export interface TrayCardProps {
   tray: TrayType;
