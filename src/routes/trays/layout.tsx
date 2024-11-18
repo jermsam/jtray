@@ -3,8 +3,8 @@ import {
   component$,
   createContextId,
   Slot,
-  useContextProvider, useOnDocument,
-  useStore,
+  useContextProvider, useOnDocument, useResource$,
+  useStore, useTask$
 } from "@builder.io/qwik";
 import {  useLocation } from "@builder.io/qwik-city";
 import { type Tray } from "~/lib/data";
@@ -25,6 +25,17 @@ export default component$(() => {
     trays: [] as Tray[],
     // mode: 'view', // 'view' | 'create' | 'update'
     // currentItem: { id: 0, name: '' },
+  });
+  
+  
+  const itemsResource = useResource$(async () => {
+    const res = await fetch(`${loc.url.origin}/api/trays`);
+    return  await res.json();
+  });
+  
+  useTask$( async ({ track }) => {
+    await track(async () => await itemsResource.value);
+    traysStore.trays = await itemsResource.value;
   });
   
   useOnDocument('DOMContentLoaded', $(() => {
