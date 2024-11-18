@@ -1,20 +1,19 @@
 import {
-  $,
   component$,
   createContextId,
-  Slot,
-  useContextProvider, useOnDocument, useResource$,
+  Slot, useContext,
+  useContextProvider,
+  useResource$,
   useStore, useTask$
 } from "@builder.io/qwik";
 import {  useLocation } from "@builder.io/qwik-city";
 import { type Tray } from "~/lib/data";
+import { ConnectionContext } from "~/routes/layout";
+import { isServer } from "@builder.io/qwik/build";
 
 interface TrayStore {
   trays: Tray[];
 }
-
-
-
 
 // Create a Context ID (no data is saved here.)
 // You will use this ID to both create and retrieve the Context.
@@ -23,10 +22,9 @@ export default component$(() => {
   const loc = useLocation(); // Provides current URL including origin
   const traysStore = useStore({
     trays: [] as Tray[],
-    // mode: 'view', // 'view' | 'create' | 'update'
-    // currentItem: { id: 0, name: '' },
   });
   
+  const connected = useContext(ConnectionContext);
   
   const itemsResource = useResource$(async () => {
     const res = await fetch(`${loc.url.origin}/api/trays`);
@@ -38,12 +36,13 @@ export default component$(() => {
     traysStore.trays = await itemsResource.value;
   });
   
-  useOnDocument('DOMContentLoaded', $(() => {
+  useTask$(() => {
+    if(isServer) return
     const eventSource = new EventSource(`${loc.url.origin}/api/trays/sse`);
     
     eventSource.onopen = () => {
       console.log('connected');
-      // connected.value = true;
+      connected.value = true;
     };
     
     eventSource.onmessage = (event) => {
@@ -51,13 +50,13 @@ export default component$(() => {
     };
     
     eventSource.onerror = () => {
-      // connected.value = false;
+      connected.value = false;
       console.log('closed');
       eventSource.close();
     };
     
     return () => eventSource.close();
-  }))
+  })
 
   useContextProvider(TraysContext, traysStore);
   return (

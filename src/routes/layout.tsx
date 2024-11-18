@@ -74,10 +74,15 @@ export const DarkModeContext = createContextId<Signal<boolean>>(
   "docs.dark-mode-context"
 );
 
+export const ConnectionContext = createContextId<Signal<boolean>>(
+  "docs.connection-context"
+);
+
 export default component$(() => {
   const darkMode = useSignal<boolean>(false);
+  const connection = useSignal<boolean>(false);
   useContextProvider(DarkModeContext, darkMode);
-  
+  useContextProvider(ConnectionContext, connection);
   // register custom event when dark-mode toggles
   useTask$(async ({ track }) => {
     track(() => darkMode.value);

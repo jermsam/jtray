@@ -6,7 +6,8 @@ import { LightDarkMode } from "~/components/light-dark-mode";
 import { NavLink } from "~/components/nav-link";
 import ProfileAvatar from "~/components/profile-avatar";
 import Switch from "~/components/switch";
-import { DarkModeContext, useUser } from "~/routes/layout";
+import { DarkModeContext,ConnectionContext, useUser } from "~/routes/layout";
+
 
 export interface SimpleLayoutProps {
   title?: string;
@@ -14,7 +15,7 @@ export interface SimpleLayoutProps {
 
 export default component$<SimpleLayoutProps>((props) => {
   const darkMode = useContext(DarkModeContext);
-  const connected = useSignal<boolean>(true);
+  const connected = useContext(ConnectionContext);
   const user = useUser();
   const loc = useLocation();
   
