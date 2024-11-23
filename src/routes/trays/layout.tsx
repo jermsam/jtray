@@ -1,8 +1,9 @@
 import {
+  $,
   component$,
   createContextId,
   Slot, useContext,
-  useContextProvider,
+  useContextProvider, useOnDocument,
   useResource$,
   useStore, useTask$
 } from "@builder.io/qwik";
@@ -36,27 +37,52 @@ export default component$(() => {
     traysStore.trays = await itemsResource.value;
   });
   
-  useTask$(() => {
-    if(isServer) return
-    const eventSource = new EventSource(`${loc.url.origin}/api/trays/sse`);
+  
+  const refreshTrays$ = $(()=>{
+    let retryCount = 0;
+    const MAX_RETRY_DELAY = 30000; // Maximum retry delay of 30 seconds
     
-    eventSource.onopen = () => {
-      console.log('connected');
-      connected.value = true;
+    const connect = () => {
+      const eventSource = new EventSource(`${loc.url.origin}/api/trays/sse`);
+      
+      eventSource.onopen = () => {
+        console.log('connected');
+        connected.value = true;
+        retryCount = 0; // Reset retry count on successful connection
+      };
+      
+      eventSource.onmessage = (event) => {
+        try {
+          traysStore.trays = JSON.parse(event.data);
+        } catch (error) {
+          console.error('Failed to parse SSE data:', error);
+        }
+      };
+      
+      eventSource.onerror = () => {
+        connected.value = false;
+        console.log('closed');
+        eventSource.close();
+        
+        // Implement exponential backoff
+        const retryDelay = Math.min(1000 * Math.pow(2, retryCount), MAX_RETRY_DELAY);
+        setTimeout(connect, retryDelay);
+        retryCount++;
+      };
+      
+      return eventSource;
     };
     
-    eventSource.onmessage = (event) => {
-      traysStore.trays = JSON.parse(event.data);
-    };
-    
-    eventSource.onerror = () => {
-      connected.value = false;
-      console.log('closed');
-      eventSource.close();
-    };
-    
+    const eventSource = connect();
     return () => eventSource.close();
   })
+  
+  useTask$(() => {
+    if(isServer) return;
+    refreshTrays$()
+  })
+  
+  useOnDocument('DOMContentLoaded', refreshTrays$)
 
   useContextProvider(TraysContext, traysStore);
   return (

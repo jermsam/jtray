@@ -8,9 +8,8 @@ import { Textarea } from "~/components/ui/textarea/textarea";
 
 export const useFormAction = formAction$(async (values, ctx) => {
   // Runs on server
-  const res = await fetch(`${ctx.url.origin}/api/trays/${values.id}`);
-  const tray = await res.json();
-  if (tray.error) {
+
+  if (!values.id) {
     // post
     await fetch(`${ctx.url.origin}/api/trays`, {
       method: "POST",
@@ -56,12 +55,10 @@ export default component$<TrayFormProps>((props) => {
 
   return (
     <Form class={"flex flex-col gap-10"} onSubmit$={props.onCancel$}>
-      <Field name={"id"}>
-        {(field, props) => (
-          <input {...props} type={"hidden"} value={field.value} />
-        )}
-      </Field>
       <div class="grid gap-4 py-4">
+        <Field name={"id"}>
+          {(field, props) => ( <Input  {...props}  value={field.value}  type="hidden" />)}
+        </Field>
         <Field name={"label"}>
           {(field, props) => (
             <div class="items-center gap-2 md:grid md:grid-cols-4 ">

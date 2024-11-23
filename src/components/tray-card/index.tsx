@@ -1,10 +1,10 @@
 
 import { component$, type QRL} from "@builder.io/qwik";
 import KebabMenu from "~/components/kebab-menu";
-import { type TrayType } from "~/lib/data_source";
+import { type Tray } from "~/lib/data";
 
 export interface TrayCardProps {
-  tray: TrayType;
+  tray: Tray;
   onEdit$?: QRL<() => void>;
   onDelete$?: QRL<() => void>;
 }
@@ -12,7 +12,7 @@ export interface TrayCardProps {
 // TODO add clx dependency to allow cass as props
 export default  component$<TrayCardProps>((props) => {
   return (
-    <div class={'relative base-tray text-gray-200 cursor-grab'}  data-tray={JSON.stringify(props.tray)}>
+    <div class={'relative base-tray text-gray-200 cursor-grab'}>
       <div class={'absolute top-0 right-1'}>
         <KebabMenu>
           <a
