@@ -56,14 +56,18 @@ export default defineConfig((): UserConfig => {
 
     server: {
       headers: {
-        // Don't cache the server response in dev mode
-        "Cache-Control": "public, max-age=0",
+        // Required headers for SSE
+        "Cache-Control": "no-cache, no-transform",
+        "Connection": "keep-alive",
+        "X-Accel-Buffering": "no"
       },
     },
     preview: {
       headers: {
-        // Do cache the server response in preview (non-adapter production build)
-        "Cache-Control": "public, max-age=600",
+        // Required headers for SSE in preview mode
+        "Cache-Control": "no-cache, no-transform",
+        "Connection": "keep-alive",
+        "X-Accel-Buffering": "no"
       },
     },
   };

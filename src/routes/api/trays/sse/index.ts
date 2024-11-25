@@ -27,13 +27,13 @@ export const onGet: RequestHandler = async (event) => {
           console.error('SSE send error:', error);
         }
       };
-      
+
       // // Send initial data
-      // sendData();
-      
+      sendData();
+
       // Subscribe for real-time updates
       const unsubscribe = subscribe(sendData);
-      
+
       // Clean up on client disconnect
       event.request.signal.addEventListener('abort', () => {
         clearInterval(heartbeat);
@@ -42,7 +42,7 @@ export const onGet: RequestHandler = async (event) => {
       });
     },
   });
-  
+
   // Correct MIME type for SSE
   event.send(new Response(stream, {
     headers: {
@@ -52,7 +52,7 @@ export const onGet: RequestHandler = async (event) => {
       'X-Accel-Buffering': 'no' // Prevent proxy buffering
     },
   }));
-  
+
 };
 
 // Subscribe for real-time updates

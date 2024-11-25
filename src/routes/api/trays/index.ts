@@ -20,5 +20,6 @@ export const onPost: RequestHandler = async (event) => {
   traySchema.parse(data)
   trays.push(data);
   notifySubscribers(); // Notify clients via SSE
+  console.log('post middleware', data);
   event.json(201, data); // Use 201 Created
 };
