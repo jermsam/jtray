@@ -16,7 +16,7 @@ export const useFormAction = formAction$(async (values, ctx) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(values),
     });
-    
+
   } else {
     // put
     await fetch(`${ctx.url.origin}/api/trays/${values.id}`, {
@@ -28,7 +28,7 @@ export const useFormAction = formAction$(async (values, ctx) => {
     });
   }
 
-  
+
   // @ts-ignore
 }, zodForm$(traySchema));
 
@@ -46,9 +46,9 @@ export default component$<TrayFormProps>((props) => {
   });
 
   useTask$(({ track }) => {
-    track(() => props.tray);
-    if (!props.tray) return;
-    for (const [key, value] of Object.entries(props.tray)) {
+    const tray = track(() => props.tray);
+    if (!tray) return;
+    for (const [key, value] of Object.entries(tray)) {
       setValue(trayForm, key, value as never);
     }
   });
